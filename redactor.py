@@ -11,7 +11,7 @@ nltk.download("wordnet", quiet=True)
 from nltk.corpus import wordnet as wn
 import pyap
 
-nlp = spacy.load("en_core_web_lg")
+nlp = en_core_web_lg.load()
 matcher = Matcher(nlp.vocab)
 pattern = [
     {"SHAPE": "ddd"},  # Matches digits like house numbers
