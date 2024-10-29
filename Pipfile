@@ -7,6 +7,7 @@ name = "pypi"
 spacy = "*"
 pytest = "*"
 nltk = "*"
+pyap2 = "*"
 
 [dev-packages]
 

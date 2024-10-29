@@ -9,8 +9,16 @@ from collections import defaultdict
 import nltk
 nltk.download("wordnet", quiet=True)
 from nltk.corpus import wordnet as wn
+import pyap
 
 nlp = spacy.load("en_core_web_lg")
+matcher = Matcher(nlp.vocab)
+pattern = [
+    {"SHAPE": "ddd"},  # Matches digits like house numbers
+    {"IS_ALPHA": True},  # Matches words like "Street" or "Avenue"
+    {"IS_ALPHA": True, "OP": "?"},  # Optional type like "St", "Ave"
+]
+matcher.add("ADDRESS", [pattern])
 
 def redact_names(doc):
     redacted = doc.text
@@ -31,13 +39,29 @@ def redact_phones(text):
 
 
 
-def redact_addresses(doc):
-    redacted = doc.text
-    for ent in reversed(doc.ents):
-        if ent.label_ in ["GPE", "LOC"]:
-            redacted = redacted[:ent.start_char] + "█" * (ent.end_char - ent.start_char) + redacted[ent.end_char:]
-    return redacted
+def redact_addresses(doc, text):
+    redacted = text
+    
 
+    street_address_ =(
+    r"((?:[A-Z\s]+[\n]*){1,2})?"
+    r"(\d{1,4} [A-Z\s]{1,40})\n"
+    r"([A-Z\s]+,\s*[A-Z]{2})\s*\d{5}"
+)
+    street_address = re.findall(street_address_, text, re.IGNORECASE)
+    for address in street_address:
+        full_address = ' '.join(part for part in address if part).strip()
+        redacted = redacted.replace(full_address, len(full_address) * "█")
+    
+    addresses = pyap.parse(text, country='US')
+
+    for address in addresses:
+        redacted = redacted.replace(address.full_address, len(address.full_address) * "█")
+
+    for ent in doc.ents:
+        if ent.label_ in ["GPE", "LOC", "FAC"]:
+            redacted = redacted.replace(ent.text, len(ent.text)*"█")
+    return redacted
 def get_synonyms(concept):
     synonyms = set()
     for syn in wn.synsets(concept):
@@ -90,7 +114,7 @@ def redact_file(input_file, output_dir, flags, concept):
         stats['phones'] = len(re.findall(r'\b(?:\+?1[-.\s]?)?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b', text))
     
     if 'address' in flags:
-        redacted = redact_addresses(nlp(redacted))
+        redacted = redact_addresses(nlp(redacted), redacted)
         stats['addresses'] = len([ent for ent in doc.ents if ent.label_ in ["GPE", "LOC"]])
     
     if concept:
