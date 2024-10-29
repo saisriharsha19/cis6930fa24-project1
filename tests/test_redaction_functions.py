@@ -2,8 +2,10 @@ import pytest
 import spacy, sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from redactor import redact_names, redact_dates, redact_phones, redact_addresses, redact_concept
+import en_core_web_lg
 
-nlp = spacy.load("en_core_web_lg")
+
+nlp = en_core_web_lg.load()
 
 @pytest.fixture
 def doc():
@@ -27,7 +29,7 @@ def test_redact_phones():
     assert "█" in result
 
 def test_redact_addresses(doc):
-    result = redact_addresses(doc)
+    result = redact_addresses(doc.text, doc)
     assert "New York" not in result
     assert "█" in result
 
