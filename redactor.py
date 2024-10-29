@@ -9,6 +9,7 @@ from collections import defaultdict
 import nltk
 nltk.download("wordnet", quiet=True)
 from nltk.corpus import wordnet as wn
+import en_core_web_lg
 import pyap
 
 nlp = en_core_web_lg.load()
