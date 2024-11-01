@@ -184,21 +184,40 @@ This test checks the redact_file function to ensure that it correctly redacts na
 
 #### 2. test_main(sample_text_file, output_dir)
 This test simulates command-line execution to verify the correct behavior of the main() function. It checks that the output file is created as expected with the proper redaction.
-
+```python
+    def test_main(sample_text_file, output_dir):
+        pass
+```
 #### 3. test_redact_names(doc)
 This test validates that names are correctly redacted from the text by ensuring that specific names do not appear in the output.
-
+```python
+    def test_redact_names(doc):
+        pass
+```
 #### 4. test_redact_dates(doc)
 This test confirms that dates are correctly redacted from the text by ensuring that specific dates do not appear in the output.
-
+```python
+    def test_redact_dates(doc):
+        pass
+```
 #### 5. test_redact_phones()
 This test checks that phone numbers are correctly redacted using a sample text containing a phone number.
-
+```python
+    def test_redact_phones():
+        pass
+```
 #### 6. test_redact_addresses(doc)
 This test verifies that addresses are properly redacted from the text.
-
+```python
+    def test_redact_addresses(doc):
+        pass
+```
 #### 7. test_redact_concept(doc)
 This test ensures that sentences containing a specified concept are redacted and checks the count of redacted sentences.
+```python
+    def test_redact_concept(doc):
+        pass
+```
 ## Bugs and Assumptions
 ### Bugs/Issues
 #### Dependency on NLTK Downloads:
