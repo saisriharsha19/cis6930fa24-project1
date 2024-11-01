@@ -11,7 +11,7 @@ The command above instructs the program to:
 
 Input: Read all .txt files in the current directory.
 Redaction Flags: Censor all names, dates, phone numbers, and addresses.
-Concept Redaction: Remove any sentences related to the concept of "kids."
+Concept Redaction: Remove any sentences related to the concept of say "kids." (NOTE: concept can be of any thing)
 Output: Save the modified files in the files/ directory, appending .censored to each filename.
 Statistics: Print redaction statistics to the standard error stream.
 
@@ -28,14 +28,13 @@ The following flags control which types of sensitive information are redacted:
 --address: Censors physical postal addresses (excluding email addresses).
 
 ### Concept Redaction
-The --concept flag can be used multiple times to specify themes or ideas for redaction (e.g., --concept prison --concept kids). This flag identifies and censors entire sentences that reference the specified concepts. In your README, provide a clear definition of a "concept," how you determined the context for these concepts, and the methodology you used for redaction.
+The --concept flag can be used multiple times to specify themes or ideas for redaction (e.g., --concept prison --concept kids). This flag identifies and censors entire sentences that reference the specified concepts. 
 
 ### Statistics
-The --stats option allows you to specify where to output the redaction statistics, which can include:
+The --stats option allows you to specify where to output the redaction statistics, which includes:
 
 The count and types of censored items.
 Summary statistics for each processed file.
-The start and end indices of each redacted item.
 
 ## How to Install
 To install the required dependencies, ensure you have pipenv installed. Navigate to the project directory and run:
@@ -51,14 +50,11 @@ Run the script from the command line with the following parameters:
 ```bash 
     pipenv run python redactor.py --input '*.txt' \
                     --names --dates --phones --address \
-                    --concept 'kids' \
+                    --concept 'something' \
                     --output 'files/' \
                     --stats stderr
 ```
-Here is an example video of running the code using a valid URL.
-![run.gif]
 
-This will download the PDF, extract the data, create a local SQLite database, and display the incident nature statistics.
 
 ## Testing
 To run the test files in the /tests/ folder
@@ -199,62 +195,32 @@ This test verifies that addresses are properly redacted from the text.
 #### 7. test_redact_concept(doc)
 This test ensures that sentences containing a specified concept are redacted and checks the count of redacted sentences.
 ## Bugs and Assumptions
-### Bugs and Issues
+### Bugs/Issues
 #### Dependency on NLTK Downloads:
 
 The code uses nltk.download("wordnet", quiet=True), which requires internet access to download the WordNet corpus. If run in an environment without internet access, it will fail. A better approach would be to check if WordNet is already downloaded.
 #### Matcher Pattern Flexibility:
 
-The address matcher pattern (pattern variable) is quite specific. If the format of addresses in the text varies significantly, it may not match some addresses correctly. This may lead to missed redactions.
+The address matcher pattern (pattern variable) is quite specific (uses regex and a library named pyap). If the format of addresses in the text varies significantly, it may not match some addresses correctly. This may lead to missed redactions.
 #### Regex for Phone Numbers:
 
 The regex pattern for phone numbers in redact_phones may not cover all possible phone formats, especially international formats. For example, it might miss formats like "+44 20 1234 5678" (UK) or special characters.
-#### Hardcoded Address Format:
 
-The regex for street addresses in redact_addresses assumes a very specific format (e.g., 1-2 lines followed by city/state/ZIP). This may not account for other valid address formats, leading to potential missed redactions.
-#### Redaction Function Return Values:
-
-The redact_addresses function always returns redacted but doesn't ensure that the text contains redacted addresses. If no addresses are found, it may return the original text.
 #### Concept Redaction Logic:
 
 In redact_concept, the logic that checks for synonym similarity might not be efficient for large texts or numerous synonyms. It can lead to performance issues or missed redactions if synonym detection fails.
 #### Output File Naming:
 
 The output file is named with .censored but does not validate if the output_dir already contains a file with the same name, which could lead to overwriting existing files.
-#### Error Handling:
 
-The redact_file function does not handle potential errors while reading from or writing to files. If a file does not exist or is not readable, it should catch exceptions and handle them gracefully.
 #### Statistics Calculation:
 
 The statistics collected do not differentiate between multiple occurrences of the same entity type (e.g., if "Jane Doe" appears multiple times). This may lead to inaccurate reporting of redacted items.
-### Assumptions About Input Files:
+### Assumptions:
 
-1. The program assumes that all input files are text files. If a user specifies a binary file or a non-text file, it may cause errors during reading.
-Assumption on Argument Parsing:
+1. I'm assuming that Spacy's entity recognition is able to handle and redact all the Names and Dates
 
 2. The argument parsing assumes that the user will provide the --input and --output parameters. There are no checks for valid input patterns or output directory existence prior to processing.
 Assumptions
-Language Model Availability:
 
-3. The code assumes that the en_core_web_lg spaCy model is installed. If not, the code will raise an error when trying to load the model.
-Redaction Needs:
-
-4. It assumes that users will always want to redact names, dates, phones, addresses, or concepts as per the flags passed. It doesn't provide an option for the user to selectively skip certain types.
-Document Structure:
-
-5. The redact_addresses function assumes that the document text has a specific structure conducive to regex matching. If the structure is not as expected, it may lead to inaccurate redaction.
-Concept Redaction:
-
-6. It assumes that the concept provided for redaction will always have synonyms. If a concept has no synonyms in WordNet, it may lead to no redaction occurring.
-Environment Compatibility:
-
-7. The code assumes it will run in an environment where all necessary libraries (spaCy, NLTK, etc.) are properly installed and compatible.
-Redaction Marking:
-
-8. The code assumes that replacing sensitive data with "█" is acceptable for all types of redaction without providing an alternative or configurable character for redaction.
-Recursion in Directory Traversal:
-
-9. The code uses glob.glob with recursive=True, assuming that the directory structure and file permissions allow for such traversal without issues.
-Input File Format:
-
-10. It assumes that input files will be in a specific format that can be processed by spaCy without issues. Non-standard text files might cause unexpected errors.
+3. I'm assuming that input files will be in a specific format that can be processed by spaCy without issues. Non-standard text files might cause unexpected errors.
