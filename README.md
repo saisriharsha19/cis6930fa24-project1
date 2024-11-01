@@ -177,6 +177,11 @@ The testing suite utilizes pytest to validate the functionality of the redaction
 #### 1. test_redact_file(sample_text_file, output_dir)
 This test checks the redact_file function to ensure that it correctly redacts names, dates, phone numbers, addresses, and specific concepts from a sample text file. It verifies the existence of the output file and the accuracy of redaction counts.
 
+```python
+    def test_redact_file(sample_text_file, output_dir):
+        pass
+```
+
 #### 2. test_main(sample_text_file, output_dir)
 This test simulates command-line execution to verify the correct behavior of the main() function. It checks that the output file is created as expected with the proper redaction.
 
