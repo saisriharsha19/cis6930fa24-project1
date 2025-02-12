@@ -1,10 +1,10 @@
-# cis6930fa24-project1
+# Text Redaction System for Sensitive Information
 
 # README
 
 # Name: Sai Sri Harsha Guddati
-## Assignment Description
-In this project, we need to create a data pipeline to develop a system that processes plain text documents, identifying and censoring sensitive information. The system is designed to read all text files that match a specified pattern and apply various redaction techniques to remove names, dates, phone numbers, addresses, and specific concepts.
+## Project Description
+In this project, I have created a data pipeline to develop a system that processes plain text documents, identifying and censoring sensitive information. The system is designed to read all text files that match a specified pattern and apply various redaction techniques to remove names, dates, phone numbers, addresses, and specific concepts.
 
 ### Functionality Overview
 The command above instructs the program to:
